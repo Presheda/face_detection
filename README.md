@@ -1,16 +1,18 @@
 # face_detection
 
-A new Flutter project.
+A simple face detection app
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+This a simple face detection app. 
 
-A few resources to get you started if this is your first Flutter project:
+This uses the - [google_mlkit_face_detection](https://pub.dev/packages/google_mlkit_face_detection) package
+
+It creates an oval, ensures face is detected in the oval, ensures face is centered in the oval, ensures face is not too big
+or too small and automatically starts capturing 
+
 
 - [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
 - [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+
