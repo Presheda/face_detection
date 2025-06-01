@@ -2,7 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:camera/camera.dart';
-import 'package:face_detection/timer_progress_indicator.dart';
+import 'package:face_detection/face_detection/timer_progress_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
 import 'package:screenshot/screenshot.dart';
@@ -35,10 +35,15 @@ class _FaceDetectorScreenState extends State<FaceDetectorScreen> {
 
   Rect? boundPainter;
 
+  bool _canProcess = true;
+  bool _isBusy = false;
+
   @override
   void dispose() {
+    _canProcess = false;
     _faceDetector.close();
     _faceInOval.dispose();
+
     super.dispose();
   }
 
@@ -113,6 +118,9 @@ class _FaceDetectorScreenState extends State<FaceDetectorScreen> {
   /// This process the image
   Future<void> _processImage(InputImage inputImage, Size previewSize,
       CameraImage cameraImage, InputImageRotation rotation) async {
+    if (!_canProcess) return;
+    if (_isBusy) return;
+    _isBusy = true;
     final faces = await _faceDetector.processImage(inputImage);
 
     /// we return early if no face is detected or face is smiling or eyes not opened
@@ -125,6 +133,7 @@ class _FaceDetectorScreenState extends State<FaceDetectorScreen> {
         _text = "More Than One Face Detected";
         _faceInOval.value = false;
         setState(() {});
+        _isBusy = false;
         return;
       }
 
@@ -136,6 +145,7 @@ class _FaceDetectorScreenState extends State<FaceDetectorScreen> {
         _text = "Keep Face Straight And Upright";
         _faceInOval.value = false;
         setState(() {});
+        _isBusy = false;
         return;
       }
 
@@ -148,6 +158,7 @@ class _FaceDetectorScreenState extends State<FaceDetectorScreen> {
         _text = "Keep Eyes Open";
         _faceInOval.value = false;
         setState(() {});
+        _isBusy = false;
         return;
       }
 
@@ -162,12 +173,18 @@ class _FaceDetectorScreenState extends State<FaceDetectorScreen> {
         _text = "Nose And Mouth Unavailable";
         _faceInOval.value = false;
         setState(() {});
+        _isBusy = false;
         return;
       }
 
       /// Now we check if the face is in oval
       _checkFaceInOval(
           faces[0], previewSize, inputImage.metadata!.rotation, inputImage);
+
+    }
+    _isBusy = false;
+    if (mounted) {
+      setState(() {});
     }
   }
 
